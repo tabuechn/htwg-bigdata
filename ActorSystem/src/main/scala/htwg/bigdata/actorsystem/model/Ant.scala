@@ -11,6 +11,10 @@ class Ant(var position: Position) extends Actor {
 
   val random = scala.util.Random
 
+  def this() {
+    this(new Position(0, 0))
+  }
+
   override def receive = {
     case pos: Position => position = pos
     case _ => {

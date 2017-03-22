@@ -12,14 +12,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * Created by Michael Walz on 22.03.2017.
   */
-class Navigator(var positions: TrieMap[ActorRef, Position]) extends Actor {
+class Navigator extends Actor {
 
   val antPositions = new TrieMap[ActorRef, Position]()
   val random = scala.util.Random
-
   var foxPosition = new Position(0, 0)
 
   val actorsys = Navigator.actorSystem
+
+  var positions = TrieMap[ActorRef, Position]()
 
   // init
   createFox(new Position(Presets.FieldWidth, Presets.FieldWidth))
