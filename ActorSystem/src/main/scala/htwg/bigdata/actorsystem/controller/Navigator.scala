@@ -24,9 +24,9 @@ class Navigator extends Actor {
 
   // init
   createFox(new Position(Presets.FieldWidth, Presets.FieldWidth))
-  createAnt(new Position(0, 0))
-  createAnt(new Position(Presets.FieldWidth, 0))
-  createAnt(new Position(0, Presets.FieldWidth))
+  createAnt(new Position(0, 0), "f1")
+  createAnt(new Position(Presets.FieldWidth, 0), "f2")
+  createAnt(new Position(0, Presets.FieldWidth),"f3")
 
   override def receive = {
     case pos: Position => {
@@ -43,8 +43,10 @@ class Navigator extends Actor {
   }
 
   def checkCollisions = {
+    System.out.println("   XXXXXX Number of ants: " + antPositions.size + " XXXX");
+
     antPositions.keySet.foreach(antRef => {
-      if (antPositions.get(antRef) == foxPosition) {
+      if (antPositions.get(antRef).get == foxPosition) {
         println("killed ant")
         antRef ! PoisonPill.getInstance
         antPositions.remove(antRef)
@@ -58,7 +60,8 @@ class Navigator extends Actor {
       val distinctPositions = new HashSet[Position]
       antPositions.values.foreach(p => distinctPositions.add(p))
       if (distinctPositions.size < numberOfAnts && numberOfAnts < Presets.MaxAnts) {
-        createAnt(new Position(random.nextInt(Presets.FieldWidth), random.nextInt(Presets.FieldWidth)))
+        System.out.println("XXXXXXXXX");
+        createAnt(new Position(random.nextInt(Presets.FieldWidth), random.nextInt(Presets.FieldWidth)), random.nextInt(1000).toString)
       }
     }
   }
@@ -77,8 +80,8 @@ class Navigator extends Actor {
     println(fox.path.name + " on " + position)
   }
 
-  def createAnt(position: Position) = {
-    val ant = Navigator.actorSystem.actorOf(Props[Ant], "antActor")
+  def createAnt(position: Position, name: String) = {
+    val ant = Navigator.actorSystem.actorOf(Props[Ant], name)
     ant ! position
     antPositions.put(ant, position)
     Navigator.actorSystem.scheduler.schedule(Presets.Delay, Presets.AntFreq, ant, Presets.Trigger)
