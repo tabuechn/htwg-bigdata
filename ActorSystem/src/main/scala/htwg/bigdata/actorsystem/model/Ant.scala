@@ -1,47 +1,59 @@
 package htwg.bigdata.actorsystem.model
 
-import akka.actor.Actor
+import akka.actor.{Actor, ActorRef, ActorSystem}
 import htwg.bigdata.actorsystem.Presets
 import htwg.bigdata.actorsystem.util.Position
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
+
 /**
-  * Created by Michael Walz on 22.03.2017.
+  * Created by Michael Walz and Fabian Mog on 22.03.2017.
   */
-class Ant(var position: Position) extends Actor {
+class Ant(val navigatorRef: ActorRef, var position: Position) extends Actor {
 
   val random = scala.util.Random
+  val system = ActorSystem("antSystem")
 
-  def this() {
-    this(new Position(0, 0))
-  }
+  val cancellable =
+    system.scheduler.schedule(Duration.Zero, Duration(random.nextInt(Presets.MinVelocity), "millis"))(tellNewPosition)
 
   override def receive = {
-    case pos: Position => position = pos
+    case pos: Position => {
+      // set new position
+      position = pos
+    }
+    case "fieldOccupied" => {
+      // ask again for a new position
+      tellNewPosition
+    }
+    case "kill" => {
+      // final position reached
+      cancellable.cancel
+      context.unbecome
+    }
     case _ => {
-      move
-      sender() ! position
+      println("unknown message")
     }
   }
 
-  def move = {
-    val r = random.nextInt(4) // range is 0 inclusive to 3 inclusive
-    r match {
-      case 0 => position = new Position(
-        position.x,
-        if (position.y > 0) position.y - 1 else 0
-      )
-      case 1 => position = new Position(
-        if (position.x < Presets.FieldWidth) position.x + 1 else Presets.FieldWidth,
-        position.y
-      )
-      case 2 => position = new Position(
-        position.x,
-        if (position.y < Presets.FieldWidth) position.y + 1 else Presets.FieldWidth
-      )
-      case 3 => position = new Position(
-        if (position.x > 0) position.x - 1 else 0,
-        position.y
-      )
+  def tellNewPosition = {
+
+    // init result position with current position
+    var result = new Position(position.x, position.y)
+
+    // increase x OR y randomly
+    if (random.nextInt(2) == 0) {
+      if (position.x < Presets.FinalPosition.x) {
+        result = new Position(position.x + 1, position.y)
+      }
+    } else {
+      if (position.y < Presets.FinalPosition.y) {
+        result = new Position(position.x, position.y + 1)
+      }
     }
+
+    // ask navigator about new position
+    navigatorRef ! result
   }
 }

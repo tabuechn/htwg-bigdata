@@ -1,7 +1,7 @@
 package htwg.bigdata.actorsystem.util
 
 /**
-  * Created by Michael Walz on 22.03.2017.
+  * Created by Michael Walz and Fabian Mog on 22.03.2017.
   */
 case class Position(val x: Int, val y: Int) {
 

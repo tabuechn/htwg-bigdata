@@ -1,18 +1,16 @@
 package htwg.bigdata.actorsystem
 
-import java.util.concurrent.TimeUnit
-
-import scala.concurrent.duration.FiniteDuration
+import htwg.bigdata.actorsystem.util.Position
 
 /**
-  * Created by user on 22.03.2017.
+  * Created by Michael Walz and Fabian Mog on 22.03.2017.
   */
 object Presets {
 
-  val FieldWidth = 5
+  val FieldWidth = 10
+  val SpawnWidth = 5
   val Trigger = ""
-  val FoxFreq = new FiniteDuration(100, TimeUnit.MILLISECONDS)
-  val AntFreq = new FiniteDuration(200, TimeUnit.MILLISECONDS)
-  val Delay = new FiniteDuration(10, TimeUnit.MILLISECONDS)
-  val MaxAnts = 6
+  val MaxAnts = 3
+  val MinVelocity = 300
+  val FinalPosition = new Position(FieldWidth, FieldWidth)
 }

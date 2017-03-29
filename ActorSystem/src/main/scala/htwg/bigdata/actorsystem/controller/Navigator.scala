@@ -1,89 +1,86 @@
 package htwg.bigdata.actorsystem.controller
 
-import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import htwg.bigdata.actorsystem.Presets
 import htwg.bigdata.actorsystem.model.Ant
 import htwg.bigdata.actorsystem.util.Position
 
 import scala.collection.concurrent.TrieMap
-import scala.collection.mutable.HashSet
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
-  * Created by Michael Walz on 22.03.2017.
+  * Created by Michael Walz and Fabian Mog on 22.03.2017.
   */
-class Navigator extends Actor {
-
-  val antPositions = new TrieMap[ActorRef, Position]()
-  val random = scala.util.Random
-
-  val actorsys = Navigator.actorSystem
-
-  var positions = TrieMap[ActorRef, Position]()
-
-  // init
-  /*
-  createAnt(new Position(0, 0), "f1")
-  createAnt(new Position(Presets.FieldWidth, 0), "f2")
-  createAnt(new Position(0, Presets.FieldWidth),"f3")
-   */
-
-  var a = 0;
-  for( a <- 1 to 10000){
-    createAnt(new Position(random.nextInt(10000000), random.nextInt(10000000)), "Ant"+a)
-  }
+class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
 
   override def receive = {
+
     case pos: Position => {
-      antPositions.put(sender(), pos)
-      printPositions
-      checkCollisions
+
+      // TODO: replace with textual ui
+      println
+      println("============= Navigator =============")
+      /*
+      println("          TreeMap: " + antPositions.values)
+      println("           Sender: " + sender)
+      println("  Actual position: " + antPositions.get(sender).getOrElse(null))
+      println("Demanded position: " + pos)
+      */
+      println("TreeMap Size: " + antPositions.size)
+
+      if (pos != Presets.FinalPosition) {
+        if (causesCollisions(pos)) {
+          println("-> Position change denied!")
+          sender ! "fieldOccupied"
+        } else {
+          println("-> Position change accepted!")
+          antPositions.put(sender, pos)
+          sender ! pos
+
+        }
+      } else {
+        // ant demands finish position --> kill ant
+        println("-> Final position demanded -> Kill ant!")
+        antPositions.remove(sender)
+
+        sender ! "kill"
+
+        // shutdown actor system if all ants have finished
+        if (antPositions.isEmpty) {
+          ActorSystem("antSystem").terminate
+          System.exit(0)
+        }
+      }
     }
     case _ => {
+      // do nothing
     }
   }
 
-  def checkCollisions = {
-   println("   XXXXXX Number of ants: " + antPositions.size + " XXXX")
-
-    /*
-    antPositions.keySet.foreach(antRef => {
-      if (antPositions.get(antRef).get == ) {
-        println("killed ant")
-        antRef ! PoisonPill.getInstance
-        antPositions.remove(antRef)
-        "free"
-      }
-      else
-        {
-          "taken"
-        }
+  def causesCollisions(position: Position): Boolean = {
+    antPositions.values.exists(pos => {
+      pos == position
     })
-
-    */
-  }
-
-  def printPositions = {
-    var string = ""
-    antPositions.foreach(p => string += (p._2.toString + "  "))
-    println("Ants on positions: " + antPositions.toString())
-  }
-
-  def createAnt(position: Position, name: String) = {
-    val ant = Navigator.actorSystem.actorOf(Props[Ant], name)
-    ant ! position
-    antPositions.put(ant, position)
-    Navigator.actorSystem.scheduler.schedule(Presets.Delay, Presets.AntFreq, ant, Presets.Trigger)
-    println("new ant " + ant.path.name + " on " + position)
-    //println("Ants on positions: " + antPositions.toString())
   }
 }
 
 object Navigator {
 
-  val actorSystem = ActorSystem("antSimulationSystem")
+  val system = ActorSystem("antSystem")
+  val random = scala.util.Random
 
   def main(args: Array[String]) {
-    actorSystem.actorOf(Props[Navigator], "navigatorActor")
+
+    val positions = TrieMap[ActorRef, Position]()
+
+    // create navigator actor
+    val navigator = system.actorOf(Props(new Navigator(positions)), "navigatorActor")
+
+    // create ants and schedule them to ask navigator for collisions
+    var it = 0
+    for (it <- 0 to Presets.MaxAnts - 1) {
+      val antPosition = new Position(random.nextInt(Presets.SpawnWidth + 1), random.nextInt(Presets.SpawnWidth + 1))
+      val antActor = system.actorOf(Props(new Ant(navigator, antPosition)), name = "ant_" + it)
+      positions.put(antActor, antPosition)
+    }
   }
 }
