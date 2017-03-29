@@ -16,25 +16,26 @@ class Navigator extends Actor {
 
   val antPositions = new TrieMap[ActorRef, Position]()
   val random = scala.util.Random
-  var foxPosition = new Position(0, 0)
 
   val actorsys = Navigator.actorSystem
 
   var positions = TrieMap[ActorRef, Position]()
 
   // init
-  createFox(new Position(Presets.FieldWidth, Presets.FieldWidth))
+  /*
   createAnt(new Position(0, 0), "f1")
   createAnt(new Position(Presets.FieldWidth, 0), "f2")
   createAnt(new Position(0, Presets.FieldWidth),"f3")
+   */
+
+  var a = 0;
+  for( a <- 1 to 10000){
+    createAnt(new Position(random.nextInt(10000000), random.nextInt(10000000)), "Ant"+a)
+  }
 
   override def receive = {
     case pos: Position => {
-      if (sender().path.name == "foxActor") {
-        foxPosition = pos
-      } else {
-        antPositions.put(sender(), pos)
-      }
+      antPositions.put(sender(), pos)
       printPositions
       checkCollisions
     }
@@ -43,41 +44,29 @@ class Navigator extends Actor {
   }
 
   def checkCollisions = {
-    System.out.println("   XXXXXX Number of ants: " + antPositions.size + " XXXX");
+   println("   XXXXXX Number of ants: " + antPositions.size + " XXXX")
 
+    /*
     antPositions.keySet.foreach(antRef => {
-      if (antPositions.get(antRef).get == foxPosition) {
+      if (antPositions.get(antRef).get == ) {
         println("killed ant")
         antRef ! PoisonPill.getInstance
         antPositions.remove(antRef)
+        "free"
       }
+      else
+        {
+          "taken"
+        }
     })
-    if (antPositions.isEmpty) {
-      println("no ants left")
-      Navigator.actorSystem.terminate()
-    } else {
-      val numberOfAnts = antPositions.size
-      val distinctPositions = new HashSet[Position]
-      antPositions.values.foreach(p => distinctPositions.add(p))
-      if (distinctPositions.size < numberOfAnts && numberOfAnts < Presets.MaxAnts) {
-        System.out.println("XXXXXXXXX");
-        createAnt(new Position(random.nextInt(Presets.FieldWidth), random.nextInt(Presets.FieldWidth)), random.nextInt(1000).toString)
-      }
-    }
+
+    */
   }
 
   def printPositions = {
     var string = ""
     antPositions.foreach(p => string += (p._2.toString + "  "))
-    print("fox on position: " + foxPosition + ", ants on positions: " + antPositions.toString())
-  }
-
-  def createFox(position: Position) = {
-    val fox = Navigator.actorSystem.actorOf(Props[Ant], "foxActor")
-    fox ! position
-    foxPosition = position
-    Navigator.actorSystem.scheduler.schedule(Presets.Delay, Presets.FoxFreq, fox, Presets.Trigger)
-    println(fox.path.name + " on " + position)
+    println("Ants on positions: " + antPositions.toString())
   }
 
   def createAnt(position: Position, name: String) = {
@@ -86,6 +75,7 @@ class Navigator extends Actor {
     antPositions.put(ant, position)
     Navigator.actorSystem.scheduler.schedule(Presets.Delay, Presets.AntFreq, ant, Presets.Trigger)
     println("new ant " + ant.path.name + " on " + position)
+    //println("Ants on positions: " + antPositions.toString())
   }
 }
 
