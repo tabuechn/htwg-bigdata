@@ -7,10 +7,10 @@ import htwg.bigdata.actorsystem.util.Position
   */
 object Presets {
 
-  val FieldWidth = 10
-  val SpawnWidth = 5
+  val FieldWidth = 15
+  val SpawnWidth = 14
   val Trigger = ""
-  val MaxAnts = 3
-  val MinVelocity = 300
+  val MaxAnts = 100
+  val MinVelocity = 500
   val FinalPosition = new Position(FieldWidth, FieldWidth)
 }
