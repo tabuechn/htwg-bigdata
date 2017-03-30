@@ -4,6 +4,8 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import htwg.bigdata.actorsystem.Presets
 import htwg.bigdata.actorsystem.model.Ant
 import htwg.bigdata.actorsystem.util.Position
+import htwg.bigdata.actorsystem.util.Timer
+import org.slf4j.LoggerFactory
 
 import scala.collection.concurrent.TrieMap
 
@@ -12,34 +14,39 @@ import scala.collection.concurrent.TrieMap
   */
 class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
 
+  val logger = LoggerFactory.getLogger(this.getClass)
+
   override def receive = {
 
     case pos: Position => {
 
       // TODO: replace with textual ui
-      println
-      println("============= Navigator =============")
+      //println
+      //println("============= Navigator =============")
       /*
       println("          TreeMap: " + antPositions.values)
       println("           Sender: " + sender)
       println("  Actual position: " + antPositions.get(sender).getOrElse(null))
       println("Demanded position: " + pos)
       */
-      println("TreeMap Size: " + antPositions.size)
+      logger.info("TreeMap Size: " + antPositions.size)
 
       if (pos != Presets.FinalPosition) {
         if (causesCollisions(pos)) {
-          println("-> Position change denied!")
+          //println("-> Position change denied!")
           sender ! "fieldOccupied"
         } else {
-          println("-> Position change accepted!")
+          //println("-> Position change accepted!")
+
           antPositions.put(sender, pos)
+
           sender ! pos
 
         }
       } else {
         // ant demands finish position --> kill ant
-        println("-> Final position demanded -> Kill ant!")
+        println("--> Final position demanded -> Kill ant!")
+
         antPositions.remove(sender)
 
         sender ! "kill"
@@ -47,7 +54,7 @@ class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
         // shutdown actor system if all ants have finished
         if (antPositions.isEmpty) {
           ActorSystem("antSystem").terminate
-          System.exit(0)
+          Navigator.kill
         }
       }
     }
@@ -67,6 +74,8 @@ object Navigator {
 
   val system = ActorSystem("antSystem")
   val random = scala.util.Random
+  val timer = new Timer
+  val logger = LoggerFactory.getLogger(this.getClass)
 
   def main(args: Array[String]) {
 
@@ -82,5 +91,13 @@ object Navigator {
       val antActor = system.actorOf(Props(new Ant(navigator, antPosition)), name = "ant_" + it)
       positions.put(antActor, antPosition)
     }
+
+    // start time measurement
+    timer.start
+  }
+
+  def kill = {
+    logger.info("time elapsed: " + timer.getElapsedTime)
+    System.exit(0)
   }
 }
