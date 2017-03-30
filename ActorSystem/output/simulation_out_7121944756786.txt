@@ -1,0 +1,25 @@
+
+
+
+-------------------------------------------------------------
+   FieldWidth: 10000
+   SpawnWidth: 500
+      MaxAnts: 10
+  MinVelocity: 0
+FinalPosition: 10000/10000
+    ShowBoard: false
+    ShowStats: false
+-------------------------------------------------------------
+        Moves: 211833
+   Collisions: 34667
+ Ants started: 10
+Ants finished: 10
+ Failed kills: 99
+-------------------------------------------------------------
+       Result: OK (failed removes from ants map have been handled)
+-------------------------------------------------------------
+         Time: 11.575742 sec
+-------------------------------------------------------------
+
+
+

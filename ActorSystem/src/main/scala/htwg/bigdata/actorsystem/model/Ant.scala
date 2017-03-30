@@ -15,8 +15,12 @@ class Ant(val navigatorRef: ActorRef, var position: Position) extends Actor {
   val random = scala.util.Random
   val system = ActorSystem("antSystem")
 
+  val duration = if (Presets.MaxDuration == 0) 0 else {
+    random.nextInt(Presets.MaxDuration - Presets.MinDuration) + Presets.MinDuration
+  }
+
   val cancellable =
-    system.scheduler.schedule(Duration.Zero, Duration(random.nextInt(Presets.MinVelocity) + 100, "millis"))(tellNewPosition)
+    system.scheduler.schedule(Duration.Zero, Duration(duration, "millis"))(tellNewPosition)
 
   override def receive = {
     case pos: Position => {
