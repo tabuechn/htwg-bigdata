@@ -7,14 +7,19 @@ import htwg.bigdata.actorsystem.util.Position
   */
 object Presets {
 
-  val FieldWidth = 10000
-  val SpawnWidth = 5
-  val MaxAnts = 10
-  val MinDuration = 0
-  val MaxDuration = 0
+  // params
+  val FieldWidth = 8
+  val SpawnWidth = 3
+  val MaxAnts = 100
   val FinalPosition = new Position(FieldWidth, FieldWidth)
-  val ShowBoard = false
+
+  // if too low --> dead letters occur!
+  val MinDuration = 30
+  val MaxDuration = 200
+
+  // print options
+  val ShowBoard = true
   val ShowStats = false
-  val ShowProgressBar = true
+  val ShowProgressBar = false
   val WriteToFile = true
 }
