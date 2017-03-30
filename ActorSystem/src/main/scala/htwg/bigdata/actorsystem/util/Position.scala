@@ -14,5 +14,9 @@ case class Position(val x: Int, val y: Int) {
     case _ => false
   }
 
-  override def hashCode = this.toString.hashCode
+  override def hashCode = {
+    var result = x
+    result = 31 * result + y
+    result
+  }
 }

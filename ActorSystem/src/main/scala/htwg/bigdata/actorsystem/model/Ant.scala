@@ -29,6 +29,7 @@ class Ant(val navigatorRef: ActorRef, var position: Position) extends Actor {
     case "kill" => {
       // final position reached
       cancellable.cancel
+      context.stop(self)
       context.unbecome
     }
     case _ => {

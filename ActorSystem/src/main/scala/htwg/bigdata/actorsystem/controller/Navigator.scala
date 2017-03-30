@@ -1,10 +1,12 @@
 package htwg.bigdata.actorsystem.controller
 
+import java.util.concurrent.atomic.AtomicInteger
+
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import htwg.bigdata.actorsystem.Presets
 import htwg.bigdata.actorsystem.model.Ant
-import htwg.bigdata.actorsystem.util.Position
-import htwg.bigdata.actorsystem.util.Timer
+import htwg.bigdata.actorsystem.util.{Position, Timer}
+import htwg.bigdata.actorsystem.view.TextualUI
 import org.slf4j.LoggerFactory
 
 import scala.collection.concurrent.TrieMap
@@ -15,46 +17,45 @@ import scala.collection.concurrent.TrieMap
 class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
 
   val logger = LoggerFactory.getLogger(this.getClass)
+  var collisions = new AtomicInteger(0)
+  var kills = new AtomicInteger(0)
+  var failedKills = new AtomicInteger(0)
+  var movesDone = new AtomicInteger(0)
 
   override def receive = {
 
     case pos: Position => {
-
-      // TODO: replace with textual ui
-      //println
-      //println("============= Navigator =============")
-      /*
-      println("          TreeMap: " + antPositions.values)
-      println("           Sender: " + sender)
-      println("  Actual position: " + antPositions.get(sender).getOrElse(null))
-      println("Demanded position: " + pos)
-      */
-      logger.info("TreeMap Size: " + antPositions.size)
-
       if (pos != Presets.FinalPosition) {
         if (causesCollisions(pos)) {
-          //println("-> Position change denied!")
+          collisions.incrementAndGet
           sender ! "fieldOccupied"
         } else {
-          //println("-> Position change accepted!")
-
           antPositions.put(sender, pos)
 
-          sender ! pos
+          movesDone.incrementAndGet
 
+          TextualUI.printBoard(antPositions, collisions, kills, failedKills, movesDone)
+          sender ! pos
         }
       } else {
         // ant demands finish position --> kill ant
-        println("--> Final position demanded -> Kill ant!")
+        val removed = antPositions.remove(sender)
 
-        antPositions.remove(sender)
+        if (!removed.isDefined) {
+          failedKills.incrementAndGet
 
-        sender ! "kill"
+        } else {
 
-        // shutdown actor system if all ants have finished
-        if (antPositions.isEmpty) {
-          ActorSystem("antSystem").terminate
-          Navigator.kill
+          kills.incrementAndGet
+
+          TextualUI.printBoard(antPositions, collisions, kills, failedKills, movesDone)
+          sender ! "kill"
+
+          // shutdown actor system if all ants have finished
+          if (antPositions.isEmpty) {
+            ActorSystem("antSystem").terminate
+            Navigator.kill
+          }
         }
       }
     }
@@ -84,6 +85,10 @@ object Navigator {
     // create navigator actor
     val navigator = system.actorOf(Props(new Navigator(positions)), "navigatorActor")
 
+    // ask user to start
+    println("Press any key to start simulation.")
+    System.in.read
+
     // create ants and schedule them to ask navigator for collisions
     var it = 0
     for (it <- 0 to Presets.MaxAnts - 1) {
@@ -97,7 +102,7 @@ object Navigator {
   }
 
   def kill = {
-    logger.info("time elapsed: " + timer.getElapsedTime)
+    logger.info("time elapsed: " + timer.getElapsedTime / 1000000000F)
     System.exit(0)
   }
 }
