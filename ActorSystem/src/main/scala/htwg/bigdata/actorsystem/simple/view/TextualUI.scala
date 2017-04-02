@@ -7,13 +7,14 @@ import htwg.bigdata.actorsystem.simple.Presets
 import htwg.bigdata.actorsystem.simple.util.Position
 
 import scala.collection.concurrent.TrieMap
+import scala.collection.mutable
 
 /**
   * Created by Michael Walz and Fabian Mog on 30.03.2017.
   */
 object TextualUI {
 
-  def printBoard(antPositions: TrieMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
+  def printBoard(antPositions: mutable.HashMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
                  failedKills: AtomicInteger, movesDone: AtomicInteger, showBoard: Boolean, showStats: Boolean): Unit = {
 
     if (showBoard) {

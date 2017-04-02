@@ -9,11 +9,12 @@ import htwg.bigdata.actorsystem.simple.view.TextualUI
 import org.slf4j.LoggerFactory
 
 import scala.collection.concurrent.TrieMap
+import scala.collection.mutable
 
 /**
   * Created by Michael Walz and Fabian Mog on 22.03.2017.
   */
-class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
+class Navigator(val antPositions: mutable.HashMap[ActorRef, Position]) extends Actor {
 
   private val logger = LoggerFactory.getLogger(this.getClass)
 
@@ -73,8 +74,8 @@ class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
     antPositions.values.exists(pos => pos == position)
   }
 
-  private def draw(antPositions: TrieMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
-           failedKills: AtomicInteger, movesDone: AtomicInteger) = {
+  private def draw(antPositions: mutable.HashMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
+                   failedKills: AtomicInteger, movesDone: AtomicInteger) = {
     if (Presets.ShowBoard || Presets.ShowStats) {
       TextualUI.printBoard(antPositions, collisions, kills, failedKills, movesDone,
         Presets.ShowBoard, Presets.ShowStats)

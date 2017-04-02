@@ -9,6 +9,7 @@ import htwg.bigdata.actorsystem.simple.util.{Position, Timer}
 import org.slf4j.LoggerFactory
 
 import scala.collection.concurrent.TrieMap
+import scala.collection.mutable
 
 /**
   * Created by Michael Walz on 02.04.2017.
@@ -23,7 +24,7 @@ object AntsSimulation {
 
   def main(args: Array[String]) {
 
-    val positions = TrieMap[ActorRef, Position]()
+    val positions = mutable.HashMap[ActorRef, Position]()
 
     // create navigator actor
     val navigator = system.actorOf(Props(new Navigator(positions)), "navigatorActor")
@@ -43,7 +44,7 @@ object AntsSimulation {
     timer.start
   }
 
-  def exitSimulation(antPositions: TrieMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
+  def exitSimulation(antPositions: mutable.HashMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
                      failedKills: AtomicInteger, movesDone: AtomicInteger): Unit = {
 
     var result = ""

@@ -34,7 +34,6 @@ class Ant(val navigatorRef: ActorRef, var position: Position) extends Actor {
       // final position reached
       cancellable.cancel
       context.stop(self)
-      context.unbecome
 
     case _ => println("unknown message")
   }
