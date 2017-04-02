@@ -27,10 +27,10 @@ class Ant(val navigatorRef: ActorRef, var position: Position) extends Actor {
       // set new position
       position = pos
     }
-    case "fieldOccupied" => {
+    case Messages.FieldOccupied => {
       // do nothing
     }
-    case "kill" => {
+    case Messages.Finished => {
       // final position reached
       cancellable.cancel
       context.stop(self)

@@ -29,7 +29,7 @@ class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
       if (pos != Presets.FinalPosition) {
         if (causesCollisions(pos)) {
           collisions.incrementAndGet
-          sender ! "fieldOccupied"
+          sender ! Messages.FieldOccupied
         } else {
           antPositions.put(sender, pos)
           movesDone.incrementAndGet
@@ -51,7 +51,7 @@ class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
           }
 
           draw(antPositions, collisions, kills, failedKills, movesDone)
-          sender ! "kill"
+          sender ! Messages.Finished
 
           // shutdown actor system if all ants have finished
           if (antPositions.isEmpty) {
