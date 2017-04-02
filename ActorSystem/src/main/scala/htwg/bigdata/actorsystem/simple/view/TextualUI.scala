@@ -14,7 +14,7 @@ import scala.collection.concurrent.TrieMap
 object TextualUI {
 
   def printBoard(antPositions: TrieMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
-                 failedKills: AtomicInteger, movesDone: AtomicInteger, showBoard: Boolean, showStats: Boolean) = {
+                 failedKills: AtomicInteger, movesDone: AtomicInteger, showBoard: Boolean, showStats: Boolean): Unit = {
 
     if (showBoard) {
       val positions = antPositions.values.toList

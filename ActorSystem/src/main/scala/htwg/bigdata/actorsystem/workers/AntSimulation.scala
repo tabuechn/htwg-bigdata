@@ -11,9 +11,9 @@ import htwg.bigdata.actorsystem.workers.navigator.Master
   */
 object AntSimulation {
 
-  val system = ActorSystem("antSystem")
-  val random = scala.util.Random
-  val timer = new Timer
+  private val system = ActorSystem("antSystem")
+  private val random = scala.util.Random
+  private val timer = new Timer
 
   def main(args: Array[String]) {
 
@@ -24,11 +24,9 @@ object AntSimulation {
     println("Press any key to start simulation.")
     System.in.read
 
-    // create ants and schedule them to ask navigator for collisions
-    var it = 0
     for (it <- 1 to Presets.MaxAnts) {
-      val antPosition = new Position(random.nextInt(Presets.SpawnWidth), random.nextInt(Presets.SpawnWidth))
-      val antActor = system.actorOf(Props(new Ant(navigator, antPosition)), name = "ant_" + it)
+      val antPosition = Position(random.nextInt(Presets.SpawnWidth), random.nextInt(Presets.SpawnWidth))
+      system.actorOf(Props(new Ant(navigator, antPosition)), name = "ant_" + it)
     }
 
     // start time measurement

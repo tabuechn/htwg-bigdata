@@ -1,4 +1,4 @@
-package htwg.bigdata.actorsystem.navigator
+package htwg.bigdata.actorsystem.workers.navigator
 
 import akka.actor.Actor
 import htwg.bigdata.actorsystem.simple.Presets
@@ -10,15 +10,15 @@ import htwg.bigdata.actorsystem.simple.util.Position
   */
 class Worker extends Actor {
 
-  var collisions = 0
-  var kills = 0
-  var movesDone = 0
+  private var collisions = 0
+  private var kills = 0
+  private var movesDone = 0
 
   var antPositions: Set[Position] = Set()
 
-  override def receive = {
+  override def receive: PartialFunction[Any, Unit] = {
 
-    case workerRequest: Messages.WorkerRequest => {
+    case workerRequest: Messages.WorkerRequest =>
 
       println(self + " - Colisions: " + collisions + ", Moves: " + movesDone + ", Kills: " + kills)
 
@@ -55,7 +55,6 @@ class Worker extends Actor {
           }
         */
       }
-    }
 
     case _ => // do nothing
   }

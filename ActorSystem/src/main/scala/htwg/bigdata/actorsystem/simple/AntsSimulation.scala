@@ -15,10 +15,11 @@ import scala.collection.concurrent.TrieMap
   */
 object AntsSimulation {
 
-  val system = ActorSystem("antSystem")
-  val random = scala.util.Random
-  val timer = new Timer
-  val logger = LoggerFactory.getLogger(this.getClass)
+  private val logger = LoggerFactory.getLogger(this.getClass)
+
+  private val system = ActorSystem("antSystem")
+  private val random = scala.util.Random
+  private val timer = new Timer
 
   def main(args: Array[String]) {
 
@@ -33,7 +34,7 @@ object AntsSimulation {
 
     // create ants and schedule them to ask navigator for collisions
     for (it <- 1 to Presets.MaxAnts) {
-      val antPosition = new Position(random.nextInt(Presets.SpawnWidth + 1), random.nextInt(Presets.SpawnWidth + 1))
+      val antPosition = Position(random.nextInt(Presets.SpawnWidth + 1), random.nextInt(Presets.SpawnWidth + 1))
       val antActor = system.actorOf(Props(new Ant(navigator, antPosition)), name = "ant_" + it)
       positions.put(antActor, antPosition)
     }
@@ -43,7 +44,7 @@ object AntsSimulation {
   }
 
   def exitSimulation(antPositions: TrieMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
-                     failedKills: AtomicInteger, movesDone: AtomicInteger) = {
+                     failedKills: AtomicInteger, movesDone: AtomicInteger): Unit = {
 
     var result = ""
     if (movesDone.get >= 0 && collisions.get >= 0 && kills.get == Presets.MaxAnts) {

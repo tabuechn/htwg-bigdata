@@ -7,11 +7,11 @@ class Timer {
 
   private var now = 0L
 
-  def start = {
+  def start(): Unit = {
     now = System.nanoTime
   }
 
-  def getElapsedTime = {
+  def getElapsedTime: Long = {
     System.nanoTime - now
   }
 }

@@ -11,7 +11,7 @@ object Presets {
   val FieldWidth = 15
   val SpawnWidth = 5
   val MaxAnts = 100
-  val FinalPosition = new Position(FieldWidth, FieldWidth)
+  val FinalPosition = Position(FieldWidth, FieldWidth)
 
   // ants "ask for new position" interval
   val MinDuration = 50

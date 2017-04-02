@@ -15,16 +15,16 @@ import scala.collection.concurrent.TrieMap
   */
 class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
 
-  val logger = LoggerFactory.getLogger(this.getClass)
+  private val logger = LoggerFactory.getLogger(this.getClass)
 
-  val collisions = new AtomicInteger(0)
-  val kills = new AtomicInteger(0)
-  val failedKills = new AtomicInteger(0)
-  val movesDone = new AtomicInteger(0)
+  private val collisions = new AtomicInteger(0)
+  private val kills = new AtomicInteger(0)
+  private val failedKills = new AtomicInteger(0)
+  private val movesDone = new AtomicInteger(0)
 
-  override def receive = {
+  override def receive: PartialFunction[Any, Unit] = {
 
-    case demandedPosition: Position => {
+    case demandedPosition: Position =>
 
       // check if ant reaches finish position
       if (demandedPosition != Presets.FinalPosition) {
@@ -47,7 +47,7 @@ class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
         // ant demands finish position --> kill ant
         val removed = antPositions.remove(sender)
 
-        if (!removed.isDefined) {
+        if (removed.isEmpty) {
           failedKills.incrementAndGet
 
         } else {
@@ -65,7 +65,6 @@ class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
           }
         }
       }
-    }
 
     case _ => // do nothing
   }
@@ -74,7 +73,7 @@ class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
     antPositions.values.exists(pos => pos == position)
   }
 
-  def draw(antPositions: TrieMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
+  private def draw(antPositions: TrieMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
            failedKills: AtomicInteger, movesDone: AtomicInteger) = {
     if (Presets.ShowBoard || Presets.ShowStats) {
       TextualUI.printBoard(antPositions, collisions, kills, failedKills, movesDone,
