@@ -1,10 +1,10 @@
-package htwg.bigdata.actorsystem.view
+package htwg.bigdata.actorsystem.simple.view
 
 import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor.ActorRef
-import htwg.bigdata.actorsystem.Presets
-import htwg.bigdata.actorsystem.util.Position
+import htwg.bigdata.actorsystem.simple.Presets
+import htwg.bigdata.actorsystem.simple.util.Position
 
 import scala.collection.concurrent.TrieMap
 

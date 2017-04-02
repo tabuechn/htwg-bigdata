@@ -1,6 +1,6 @@
-package htwg.bigdata.actorsystem
+package htwg.bigdata.actorsystem.simple
 
-import htwg.bigdata.actorsystem.util.Position
+import htwg.bigdata.actorsystem.simple.util.Position
 
 /**
   * Created by Michael Walz and Fabian Mog on 22.03.2017.

@@ -1,4 +1,4 @@
-package htwg.bigdata.actorsystem.util
+package htwg.bigdata.actorsystem.simple.util
 
 /**
   * Created by Michael Walz on 30.03.2017.

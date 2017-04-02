@@ -1,8 +1,9 @@
-package htwg.bigdata.actorsystem.actors
+package htwg.bigdata.actorsystem.workers.ants
 
 import akka.actor.{Actor, ActorRef, ActorSystem}
-import htwg.bigdata.actorsystem.Presets
-import htwg.bigdata.actorsystem.util.Position
+import htwg.bigdata.actorsystem.simple.Presets
+import htwg.bigdata.actorsystem.simple.actors.Messages
+import htwg.bigdata.actorsystem.simple.util.Position
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
@@ -27,10 +28,10 @@ class Ant(val navigatorRef: ActorRef, var position: Position) extends Actor {
       // set new position
       position = pos
     }
-    case Messages.FieldOccupied => {
+    case "fieldOccupied" => {
       // do nothing
     }
-    case Messages.Finished => {
+    case "kill" => {
       // final position reached
       cancellable.cancel
       context.stop(self)
@@ -45,7 +46,6 @@ class Ant(val navigatorRef: ActorRef, var position: Position) extends Actor {
 
     // init result position with current position
     var result = new Position(position.x, position.y)
-    var tmp = new Position(position.x, position.y)
 
     // increase x OR y randomly OR (increase x and y)
     var randomInt = random.nextInt(3)
@@ -74,7 +74,7 @@ class Ant(val navigatorRef: ActorRef, var position: Position) extends Actor {
       }
     }
 
-    // ask navigator about new position
-    navigatorRef ! result
+    // ask navigator if new position is empty
+    navigatorRef ! Messages.AntRequest(result, position)
   }
 }

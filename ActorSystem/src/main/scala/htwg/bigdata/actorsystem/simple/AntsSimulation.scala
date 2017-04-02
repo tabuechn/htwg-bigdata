@@ -1,85 +1,19 @@
-package htwg.bigdata.actorsystem.actors
+package htwg.bigdata.actorsystem.simple
 
 import java.io.{BufferedWriter, File, FileWriter}
-import java.util.Calendar
 import java.util.concurrent.atomic.AtomicInteger
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import htwg.bigdata.actorsystem.Presets
-import htwg.bigdata.actorsystem.util.{Position, Timer}
-import htwg.bigdata.actorsystem.view.TextualUI
+import akka.actor.{ActorRef, ActorSystem, Props}
+import htwg.bigdata.actorsystem.simple.actors.{Ant, Navigator}
+import htwg.bigdata.actorsystem.simple.util.{Position, Timer}
 import org.slf4j.LoggerFactory
 
 import scala.collection.concurrent.TrieMap
 
 /**
-  * Created by Michael Walz and Fabian Mog on 22.03.2017.
+  * Created by Michael Walz on 02.04.2017.
   */
-class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
-
-  val logger = LoggerFactory.getLogger(this.getClass)
-  var collisions = new AtomicInteger(0)
-  var kills = new AtomicInteger(0)
-  var failedKills = new AtomicInteger(0)
-  var movesDone = new AtomicInteger(0)
-
-  override def receive = {
-
-    case pos: Position => {
-      if (pos != Presets.FinalPosition) {
-        if (causesCollisions(pos)) {
-          collisions.incrementAndGet
-          sender ! Messages.FieldOccupied
-        } else {
-          antPositions.put(sender, pos)
-          movesDone.incrementAndGet
-          draw(antPositions, collisions, kills, failedKills, movesDone)
-          sender ! pos
-        }
-      } else {
-        // ant demands finish position --> kill ant
-        val removed = antPositions.remove(sender)
-
-        if (!removed.isDefined) {
-          failedKills.incrementAndGet
-
-        } else {
-          kills.incrementAndGet
-
-          if (Presets.ShowProgressBar) {
-            println("\nAnt finished! Finished ants count is: " + kills)
-          }
-
-          draw(antPositions, collisions, kills, failedKills, movesDone)
-          sender ! Messages.Finished
-
-          // shutdown actor system if all ants have finished
-          if (antPositions.isEmpty) {
-            ActorSystem("antSystem").terminate
-            Navigator.exitSimulation(antPositions, collisions, kills, failedKills, movesDone)
-          }
-        }
-      }
-    }
-    case _ => // do nothing
-  }
-
-  def causesCollisions(position: Position): Boolean = {
-    antPositions.values.exists(pos => pos == position)
-  }
-
-  def draw(antPositions: TrieMap[ActorRef, Position], collisions: AtomicInteger, kills: AtomicInteger,
-           failedKills: AtomicInteger, movesDone: AtomicInteger) = {
-    if (Presets.ShowBoard || Presets.ShowStats) {
-      TextualUI.printBoard(antPositions, collisions, kills, failedKills, movesDone,
-        Presets.ShowBoard, Presets.ShowStats)
-    } else if (Presets.ShowProgressBar) {
-      print('.')
-    }
-  }
-}
-
-object Navigator {
+object AntsSimulation {
 
   val system = ActorSystem("antSystem")
   val random = scala.util.Random
@@ -98,8 +32,7 @@ object Navigator {
     System.in.read
 
     // create ants and schedule them to ask navigator for collisions
-    var it = 0
-    for (it <- 0 to Presets.MaxAnts - 1) {
+    for (it <- 1 to Presets.MaxAnts) {
       val antPosition = new Position(random.nextInt(Presets.SpawnWidth + 1), random.nextInt(Presets.SpawnWidth + 1))
       val antActor = system.actorOf(Props(new Ant(navigator, antPosition)), name = "ant_" + it)
       positions.put(antActor, antPosition)
@@ -156,44 +89,3 @@ object Navigator {
     System.exit(0)
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
