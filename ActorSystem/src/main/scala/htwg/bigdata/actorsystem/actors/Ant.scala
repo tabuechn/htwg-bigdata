@@ -1,4 +1,4 @@
-package htwg.bigdata.actorsystem.model
+package htwg.bigdata.actorsystem.actors
 
 import akka.actor.{Actor, ActorRef, ActorSystem}
 import htwg.bigdata.actorsystem.Presets

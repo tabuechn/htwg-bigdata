@@ -8,13 +8,13 @@ import htwg.bigdata.actorsystem.util.Position
 object Presets {
 
   // params
-  val FieldWidth = 8
-  val SpawnWidth = 3
+  val FieldWidth = 15
+  val SpawnWidth = 5
   val MaxAnts = 100
   val FinalPosition = new Position(FieldWidth, FieldWidth)
 
-  // if too low --> dead letters occur!
-  val MinDuration = 30
+  // ants "ask for new position" interval
+  val MinDuration = 50
   val MaxDuration = 200
 
   // print options

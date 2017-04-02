@@ -1,4 +1,4 @@
-package htwg.bigdata.actorsystem.controller
+package htwg.bigdata.actorsystem.actors
 
 import java.io.{BufferedWriter, File, FileWriter}
 import java.util.Calendar
@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import htwg.bigdata.actorsystem.Presets
-import htwg.bigdata.actorsystem.model.Ant
 import htwg.bigdata.actorsystem.util.{Position, Timer}
 import htwg.bigdata.actorsystem.view.TextualUI
 import org.slf4j.LoggerFactory
@@ -46,6 +45,11 @@ class Navigator(val antPositions: TrieMap[ActorRef, Position]) extends Actor {
 
         } else {
           kills.incrementAndGet
+
+          if (Presets.ShowProgressBar) {
+            println("\nAnt finished! Finished ants count is: " + kills)
+          }
+
           draw(antPositions, collisions, kills, failedKills, movesDone)
           sender ! "kill"
 
@@ -110,11 +114,7 @@ object Navigator {
 
     var result = ""
     if (movesDone.get >= 0 && collisions.get >= 0 && kills.get == Presets.MaxAnts) {
-      if (failedKills.get > 0) {
-        result = "OK (failed removes from ants map have been handled)"
-      } else {
-        result = "OK"
-      }
+      result = "OK"
     } else {
       result = "NOT OK"
     }
@@ -127,6 +127,7 @@ object Navigator {
     strBuilder ++= "   SpawnWidth: " + Presets.SpawnWidth + "\n"
     strBuilder ++= "      MaxAnts: " + Presets.MaxAnts + "\n"
     strBuilder ++= "  MinVelocity: " + Presets.MinDuration + "\n"
+    strBuilder ++= "  MaxVelocity: " + Presets.MaxDuration + "\n"
     strBuilder ++= "FinalPosition: " + Presets.FinalPosition + "\n"
     strBuilder ++= "    ShowBoard: " + Presets.ShowBoard + "\n"
     strBuilder ++= "    ShowStats: " + Presets.ShowStats + "\n"
@@ -135,14 +136,13 @@ object Navigator {
     strBuilder ++= "   Collisions: " + collisions + "\n"
     strBuilder ++= " Ants started: " + Presets.MaxAnts + "\n"
     strBuilder ++= "Ants finished: " + kills + "\n"
-    strBuilder ++= " Failed kills: " + failedKills + "\n"
     strBuilder ++= "-------------------------------------------------------------\n"
     strBuilder ++= "       Result: " + result + "\n"
     strBuilder ++= "-------------------------------------------------------------\n"
     strBuilder ++= "         Time: " + timer.getElapsedTime / 1000000000F + " sec\n"
     strBuilder ++= "-------------------------------------------------------------\n"
     strBuilder ++= "\n\n\n"
-    
+
     print(strBuilder)
 
     if (Presets.WriteToFile) {
