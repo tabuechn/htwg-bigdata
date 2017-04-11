@@ -1,6 +1,6 @@
-enablePlugins(JavaAppPackaging)
+import com.typesafe.sbt.packager.docker.Cmd
 
-name := "akka-http-microservice"
+name := "akka-http-microservice-workerserver"
 organization := "com.theiterators"
 version := "1.0"
 scalaVersion := "2.11.8"
@@ -20,6 +20,16 @@ libraryDependencies ++= {
     "org.scalatest"     %% "scalatest" % scalaTestV % "test",
     "net.liftweb" %% "lift-json" % "2.6"
   )
+}
+
+enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)
+
+dockerBaseImage := "frolvlad/alpine-oraclejdk8"
+
+dockerCommands := dockerCommands.value.flatMap{
+  case cmd@Cmd("FROM",_) => List(cmd,Cmd("RUN", "apk update && apk add bash"))
+  case other => List(other)
 }
 
 Revolver.settings
