@@ -1,3 +1,7 @@
+import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
+import com.typesafe.sbt.packager.docker.{Cmd, DockerPlugin}
+import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
+
 name := "ActorSystem"
 
 version := "1.0"
@@ -16,3 +20,13 @@ libraryDependencies += "com.typesafe.akka" %% "akka-http-jackson" % "10.0.5"
 libraryDependencies += "com.typesafe.akka" %% "akka-http-xml" % "10.0.5"
 // https://mvnrepository.com/artifact/net.liftweb/lift-webkit_2.10
 libraryDependencies += "net.liftweb" % "lift-webkit_2.10" % "2.6.3"
+
+enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)
+
+dockerBaseImage := "frolvlad/alpine-oraclejdk8"
+
+dockerCommands := dockerCommands.value.flatMap{
+  case cmd@Cmd("FROM",_) => List(cmd,Cmd("RUN", "apk update && apk add bash"))
+  case other => List(other)
+}
