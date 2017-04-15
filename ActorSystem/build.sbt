@@ -21,12 +21,24 @@ libraryDependencies += "com.typesafe.akka" %% "akka-http-xml" % "10.0.5"
 // https://mvnrepository.com/artifact/net.liftweb/lift-webkit_2.10
 libraryDependencies += "net.liftweb" % "lift-webkit_2.10" % "2.6.3"
 
-enablePlugins(JavaAppPackaging)
-enablePlugins(DockerPlugin)
+//enablePlugins(JavaAppPackaging)
+//enablePlugins(DockerPlugin)
+//
+//dockerBaseImage := "frolvlad/alpine-oraclejdk8"
+//
+//dockerCommands := dockerCommands.value.flatMap{
+//  case cmd@Cmd("FROM",_) => List(cmd,Cmd("RUN", "apk update && apk add bash"))
+//  case other => List(other)
+//}
 
-dockerBaseImage := "frolvlad/alpine-oraclejdk8"
-
-dockerCommands := dockerCommands.value.flatMap{
-  case cmd@Cmd("FROM",_) => List(cmd,Cmd("RUN", "apk update && apk add bash"))
-  case other => List(other)
-}
+lazy val root = (project in file("."))
+  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(DockerPlugin)
+  .settings(
+    name := "ActorSystem",
+    mainClass in (Compile) := Some("htwg.bigdata.actorsystem.httpAnt.AntSimulation"),
+    version := "1.0",
+    dockerBaseImage := "azul/zulu-openjdk:8",
+    dockerUpdateLatest := true,
+    dockerExposedPorts := Seq(9000)
+  )
