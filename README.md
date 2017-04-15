@@ -8,7 +8,7 @@ sbt docker:publishLocal
 
 ## Run Docker-Container
 
-docker run -it <repository>:<tag>
+docker run -it 'repository':'tag'
 
 ## Get Respository and Tag
 
