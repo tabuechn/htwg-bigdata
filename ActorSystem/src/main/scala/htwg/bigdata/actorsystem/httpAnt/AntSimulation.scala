@@ -25,6 +25,7 @@ object AntSimulation {
 
   def main(args: Array[String]) {
     val antSystem = ActorSystem("antsystem")
+    println("AntSimulation-Start")
     for (it <- 1 to antNumber) {
       val myActor = antSystem.actorOf(Props(new Ant()))
       val waitDuration = random.nextDouble()

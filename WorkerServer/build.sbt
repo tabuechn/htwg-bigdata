@@ -25,6 +25,7 @@ libraryDependencies ++= {
 enablePlugins(JavaAppPackaging)
 enablePlugins(DockerPlugin)
 
+
 dockerBaseImage := "frolvlad/alpine-oraclejdk8"
 
 dockerCommands := dockerCommands.value.flatMap{
