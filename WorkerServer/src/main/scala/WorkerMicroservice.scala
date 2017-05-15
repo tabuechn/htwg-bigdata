@@ -1,3 +1,5 @@
+import java.net.InetAddress
+
 import akka.actor.ActorSystem
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
@@ -8,6 +10,7 @@ import akka.stream.{ActorMaterializer, Materializer}
 import com.typesafe.config.{Config, ConfigFactory}
 import net.liftweb.json._
 import spray.json.DefaultJsonProtocol
+
 import scala.collection.JavaConversions._
 import scala.collection.mutable
 import scala.concurrent.ExecutionContextExecutor
@@ -50,6 +53,7 @@ trait Service extends DefaultJsonProtocol {
             delete {
               decodeRequest {
                 entity(as[String]) { content: String =>
+                  println("delete in worker")
                   val jValue = parse(content)
                   val ant = jValue.extract[Ant_DTO]
                   var statusCode = 0
@@ -84,6 +88,7 @@ object AkkaHttpMicroservice extends App with Service {
   for ((ipAddress, id) <- config.getStringList("servers").zipWithIndex) {
     ipAddressMap.put(id, ipAddress)
   }
+  println(InetAddress.getLocalHost().getHostAddress)
   println("Worker on Port " + config.getInt("http.port"))
   Http().bindAndHandle(routes, config.getString("http.interface"), config.getInt("http.port"))
 }
