@@ -29,7 +29,7 @@ enablePlugins(DockerPlugin)
 dockerBaseImage := "frolvlad/alpine-oraclejdk8"
 
 dockerCommands := dockerCommands.value.flatMap{
-  case cmd@Cmd("FROM",_) => List(cmd,Cmd("RUN", "apk update && apk add bash"), Cmd("EXPOSE", "9001"))
+  case cmd@Cmd("FROM",_) => List(cmd,Cmd("RUN", "apk update && apk add bash"), Cmd("EXPOSE", "27021"))
   case other => List(other)
 }
 
