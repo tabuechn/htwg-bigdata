@@ -25,4 +25,3 @@ sbt docker:publishLocal
 docker run -d=true --name "actor" actorsystem:1.0
 
 sh ../TerminalGui/ant_gui.sh 192.168.99.100:27020
-

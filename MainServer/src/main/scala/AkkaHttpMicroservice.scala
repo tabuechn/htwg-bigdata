@@ -14,7 +14,6 @@ import scala.collection.JavaConversions._
 import scala.concurrent.{ExecutionContextExecutor, _}
 import scala.concurrent.duration.Duration
 import scala.collection.mutable
-import java.net._
 
 trait Service extends DefaultJsonProtocol {
   implicit def executor: ExecutionContextExecutor
@@ -153,7 +152,6 @@ object AkkaHttpMicroservice extends App with Service {
   for ((ipAddress, iterator) <- config.getStringList("servers").zipWithIndex) {
     ipAddressMap.put(iterator,ipAddress)
   }
-  println(InetAddress.getLocalHost().getHostAddress())
   println("MainServer on Port "+config.getInt("http.port"))
   Http().bindAndHandle(routes, config.getString("http.interface"), config.getInt("http.port"))
 }

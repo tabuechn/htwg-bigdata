@@ -1,5 +1,3 @@
-import java.net.InetAddress
-
 import akka.actor.ActorSystem
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
@@ -88,7 +86,6 @@ object AkkaHttpMicroservice extends App with Service {
   for ((ipAddress, id) <- config.getStringList("servers").zipWithIndex) {
     ipAddressMap.put(id, ipAddress)
   }
-  println(InetAddress.getLocalHost().getHostAddress)
   println("Worker on Port " + config.getInt("http.port"))
   Http().bindAndHandle(routes, config.getString("http.interface"), config.getInt("http.port"))
 }

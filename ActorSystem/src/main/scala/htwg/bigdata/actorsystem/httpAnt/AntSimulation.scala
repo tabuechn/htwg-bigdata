@@ -1,6 +1,5 @@
 package htwg.bigdata.actorsystem.httpAnt
 
-import java.net.InetAddress
 import java.util.concurrent.atomic.AtomicInteger
 
 import scala.concurrent.ExecutionContextExecutor
@@ -28,7 +27,6 @@ object AntSimulation {
 
   def main(args: Array[String]) {
     val antSystem = ActorSystem("antsystem")
-    println(InetAddress.getLocalHost().getHostAddress)
     println("AntSimulation-Start")
     for (it <- 1 to antNumber) {
       val myActor = antSystem.actorOf(Props(new Ant()))
