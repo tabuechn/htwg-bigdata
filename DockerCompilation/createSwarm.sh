@@ -14,6 +14,7 @@ echo "########################################################################"
 # Portforwarding aktivieren
 VBoxManage controlvm "manager1" natpf1 "tcp-port27020,tcp,,27020,,27020"
 VBoxManage controlvm "manager1" natpf1 "tcp-port27021,tcp,,27021,,27021"
+VBoxManage controlvm "worker" natpf1 "tcp-port27021,tcp,,2377,,2377"
 
 
 echo "########################################################################"
