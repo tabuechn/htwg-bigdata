@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-WORKERIP="192.168.99.106"
+
 SWARMTOKEN="SWMTKN-1-2t9xezyf6q3890ext2gfue0jcf0dynjzdg8lqdmfl4jsbe1em1-d8qbc842e9rqt8whjolc4fco2"
 MANAGERIP="141.37.160.134"
 MANAGERPORT="2377"
@@ -9,10 +9,6 @@ docker-machine rm -f worker
 
 # neuen worker erstellen
 docker-machine create --driver virtualbox worker
-WORKERIP=$(docker-machine ip worker)
-echo "########################################################################"
-echo $WORKERIP
-echo "########################################################################"
 
 # Portforwarding aktivieren
 VBoxManage controlvm "worker" natpf1 "tcp-port27020,tcp,,27020,,27020"
