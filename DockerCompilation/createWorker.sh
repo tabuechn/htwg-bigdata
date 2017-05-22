@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-SWARMTOKEN="SWMTKN-1-2t9xezyf6q3890ext2gfue0jcf0dynjzdg8lqdmfl4jsbe1em1-d8qbc842e9rqt8whjolc4fco2"
-MANAGERIP="141.37.160.134"
+SWARMTOKEN="SWMTKN-1-0gbmr3a7x6dvmv156ty0o0u5wiyrq1vwquh42lr21ggt2v9tpf-bc683dfr6ajk4b5oeozta5jxm"
+MANAGERIP="141.37.160.143"
 MANAGERPORT="2377"
 
 # worker1 löschen
