@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-MANAGERIP="192.168.99.101"
+MANAGERIP="192.168.99.103"
 
 # manager1 löschen
 docker-machine rm -f manager1
